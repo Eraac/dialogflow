@@ -40,14 +40,24 @@ type (
 	}
 
 	Fulfillment struct {
-		Speech  string    `json:"speech"`
-		Message []Message `json:"messages"`
+		Speech   string    `json:"speech"`
+		Messages []Message `json:"messages"`
 	}
 
 	Message struct {
 		Type     int    `json:"type"`
 		Platform string `json:"platform"`
-		Speech   string `json:"speech"`
+
+		// Duplicate field between XxxMessage
+		// If you put tag in XxxMessage go doesn't marshal it (because other is empty)
+		ImageURL string `json:"imageUrl,omitempty"`
+		Title    string `json:"title,omitempty"`
+
+		TextMessage
+		ImageMessage
+		CardMessage
+		QuickReplyMessage
+		CustomMessage
 	}
 
 	Status struct {

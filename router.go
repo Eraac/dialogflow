@@ -30,6 +30,8 @@ func (r *Router) HandleFunc(action string, h Handler) {
 }
 
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
 	if r.debug {
 		bs, _ := httputil.DumpRequest(req, true)
 
@@ -74,7 +76,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	w.Write(bs)
 
 	if r.debug {
-		fmt.Printf("\n===Response===\n %s\n", string(bs))
+		fmt.Printf("\n===Response===\n\n%s\n", string(bs))
 	}
 }
 
