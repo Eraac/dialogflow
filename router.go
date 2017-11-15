@@ -12,16 +12,16 @@ import (
 type (
 	Router struct {
 		handler map[string]Handler
-		debug   bool
+		config  Config
 	}
 
 	Handler func(r *Request) (*Response, error)
 )
 
-func NewRouter(debug bool) *Router {
+func NewRouter(c Config) *Router {
 	return &Router{
 		handler: map[string]Handler{},
-		debug:   debug,
+		config:  c,
 	}
 }
 
@@ -32,10 +32,14 @@ func (r *Router) HandleFunc(action string, h Handler) {
 func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	if r.debug {
+	if r.IsDebug() {
 		bs, _ := httputil.DumpRequest(req, true)
 
 		fmt.Printf("%s\n", string(bs))
+	}
+
+	if !r.isFromDialogflow(w, req) {
+		return
 	}
 
 	dfReq := &Request{}
@@ -75,8 +79,8 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(bs)
 
-	if r.debug {
-		fmt.Printf("\n===Response===\n\n%s\n", string(bs))
+	if r.IsDebug() {
+		fmt.Printf("\n===Response===\n\n%s\n\n", string(bs))
 	}
 }
 

@@ -6,13 +6,14 @@ const (
 	DataKik      = "kik_message"
 	DataTelegram = "telegram_message"
 
-	PlatformFacebook = "facebook"
-	PlatformKik      = "kik"
-	PlatformLine     = "line"
-	PlatformSkype    = "skype"
-	PlatformSlack    = "slack"
-	PlatformTelegram = "telegram"
-	PlatformViber    = "viber"
+	PlatformDialogflow = ""
+	PlatformFacebook   = "facebook"
+	PlatformKik        = "kik"
+	PlatformLine       = "line"
+	PlatformSkype      = "skype"
+	PlatformSlack      = "slack"
+	PlatformTelegram   = "telegram"
+	PlatformViber      = "viber"
 
 	TypeText          = 0
 	TypeCard          = 1
