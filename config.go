@@ -6,6 +6,7 @@ type Config struct {
 	Token string
 }
 
+// IsDebug return true if router should display debug info
 func (r *Router) IsDebug() bool {
 	return r.config.Debug
 }

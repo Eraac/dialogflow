@@ -13,6 +13,7 @@ func (c Contexts) Find(name string) (*Context, error) {
 	return nil, ErrNotFound
 }
 
+// ResetContext remove all current contexts
 func (r *Response) ResetContext() {
 	r.ContextOut = Contexts{
 		{Name: "generic", Parameters: Parameters{}, Lifespan: 0},
