@@ -12,3 +12,9 @@ func (c Contexts) Find(name string) (*Context, error) {
 
 	return nil, ErrNotFound
 }
+
+func (r *Response) ResetContext() {
+	r.ContextOut = Contexts{
+		{Name: "generic", Parameters: Parameters{}, Lifespan: 0},
+	}
+}
