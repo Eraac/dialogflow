@@ -2,12 +2,18 @@ package dialogflow
 
 type (
 	Request struct {
-		ID        string `json:"id"`
-		Timestamp string `json:"timestamp"`
-		Lang      string `json:"lang"`
-		Result    Result `json:"result"`
-		Status    Status `json:"status"`
-		SessionID string `json:"sessionId"`
+		ID              string          `json:"id"`
+		Timestamp       string          `json:"timestamp"`
+		Lang            string          `json:"lang"`
+		OriginalRequest OriginalRequest `json:"originalRequest"`
+		Result          Result          `json:"result"`
+		Status          Status          `json:"status"`
+		SessionID       string          `json:"sessionId"`
+	}
+
+	OriginalRequest struct {
+		Source string `json:"source"`
+		// Data Data
 	}
 
 	Result struct {
@@ -65,3 +71,30 @@ type (
 		ErrorType string `json:"errorType"`
 	}
 )
+
+func (req *Request) GetUserID() string {
+	switch req.OriginalRequest.Source {
+	case PlatformTelegram:
+		return req.GetTelegramUserID()
+	}
+
+	return ""
+}
+
+func (req *Request) GetTelegramUserID() string {
+	ctx, err := req.Result.Contexts.Find("generic")
+
+	if err != nil {
+		// TODO log
+		return ""
+	}
+
+	str, err := ctx.Parameters.GetString("telegram_chat_id")
+
+	if err != nil {
+		// TODO log
+		return ""
+	}
+
+	return str
+}
