@@ -14,8 +14,12 @@ func (c Contexts) Find(name string) (*Context, error) {
 }
 
 // ResetContext remove all current contexts
-func (r *Response) ResetContext() {
-	r.ContextOut = Contexts{
-		{Name: "generic", Parameters: Parameters{}, Lifespan: 0},
+func (r *Response) ResetContext(req *Request) {
+	contexts := Contexts{}
+
+	for _, c := range req.Result.Contexts {
+		contexts = append(contexts, Context{Name: c.Name, Lifespan: 0})
 	}
+
+	r.ContextOut = contexts
 }
