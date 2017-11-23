@@ -1,21 +1,37 @@
 package dialogflow
 
+import "strconv"
+
+// HasKey return true if key exist and is not empty
+func (p Parameters) HasKey(key string) bool {
+	m := map[string]interface{}(p)
+
+	v, ok := m[key]
+
+	if !ok {
+		return false
+	}
+
+	str, ok := v.(string)
+
+	return ok && str != ""
+}
 
 // GetInt return parameter `key` in int
 func (p Parameters) GetInt(key string) (int, error) {
-	item, err := p.GetParameter(key)
+	str, err := p.GetString(key)
 
 	if err != nil {
 		return 0, err
 	}
 
-	i, ok := item.(int)
+	f, err := strconv.ParseFloat(str, 64)
 
-	if !ok {
-		return 0, ErrCastFail
+	if err != nil {
+		return 0, err
 	}
 
-	return i, nil
+	return int(f), nil
 }
 
 // GetString return parameter `key` in string
