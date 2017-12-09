@@ -75,13 +75,15 @@ type (
 func (req *Request) GetUserID() string {
 	switch req.OriginalRequest.Source {
 	case PlatformTelegram:
-		return req.GetTelegramUserID()
+		return req.GetUserIDByKey("telegram_chat_id")
+	case PlatformFacebook:
+		return req.GetUserIDByKey("facebook_sender_id")
 	}
 
 	return ""
 }
 
-func (req *Request) GetTelegramUserID() string {
+func (req *Request) GetUserIDByKey(key string) string {
 	ctx, err := req.Result.Contexts.Find("generic")
 
 	if err != nil {
@@ -89,7 +91,7 @@ func (req *Request) GetTelegramUserID() string {
 		return ""
 	}
 
-	str, err := ctx.Parameters.GetString("telegram_chat_id")
+	str, err := ctx.Parameters.GetString(key)
 
 	if err != nil {
 		// TODO log
