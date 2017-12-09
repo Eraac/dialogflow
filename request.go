@@ -100,3 +100,7 @@ func (req *Request) GetUserIDByKey(key string) string {
 
 	return str
 }
+
+func (req *Request) Source() string {
+	return req.OriginalRequest.Source
+}
