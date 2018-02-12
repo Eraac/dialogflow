@@ -21,4 +21,12 @@ const (
 	TypeQuickReply    = 2
 	TypeImage         = 3
 	TypeCustomPayload = 4
+
+	TypeGoogleSimpleResponse = "simple_response"
+	TypeGoogleBasicCard      = "basic_card"
+	TypeGoogleListCard       = "list_card"
+	TypeGoogleSuggestionChip = "suggestion_chips"
+	TypeGoogleCarouselCard   = "carousel_card"
+	TypeGoogleLinkOut        = "link_out_chip"
+	TypeGoogleCustomPayload  = "custom_payload"
 )

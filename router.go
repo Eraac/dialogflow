@@ -43,7 +43,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	if r.IsDebug() {
 		bs, _ := httputil.DumpRequest(req, true)
 
-		fmt.Printf("%s\n", string(bs))
+		fmt.Printf("\n===Request===\n\n%s\n", string(bs))
 	}
 
 	if !r.isFromDialogflow(w, req) {
@@ -56,21 +56,19 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	bs, err := ioutil.ReadAll(req.Body)
 
 	if httpError(err, w) {
-		r.config.Logger.WithField("status", "error").Error(err.Error())
+		r.config.Logger.WithField("status", "error").Error(err)
 		return
 	}
 
-	err = json.Unmarshal(bs, ctx.Request)
-
-	if httpError(err, w) {
-		r.config.Logger.WithField("status", "error").Error(err.Error())
+	if err = json.Unmarshal(bs, &ctx.Request); httpError(err, w) {
+		r.config.Logger.WithField("status", "error").Error(err)
 		return
 	}
 
-	logger := r.config.Logger.WithFields(logrus.Fields{
+	ctx.Logger = r.config.Logger.WithFields(logrus.Fields{
 		"action":     "bot_interaction",
 		"intent":     ctx.Request.Result.Action,
-		"source":     ctx.Request.Source(),
+		"source":     ctx.Source(),
 		"session_id": ctx.Request.SessionID,
 		"user_id":    ctx.GetUserID(),
 		"user_ask":   ctx.Request.Result.ResolvedQuery,
@@ -80,28 +78,28 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
-		logger.WithField("status", "not found").Warn("action not found")
+		ctx.Logger.WithField("status", "not found").Warn("action not found")
 		return
 	}
 
 	res, err := h(ctx)
 
 	if httpError(err, w) {
-		logger.WithField("status", "error").Error(err)
+		ctx.Logger.WithField("status", "error").Error(err)
 		return
 	}
 
 	bs, err = json.Marshal(res)
 
 	if httpError(err, w) {
-		logger.WithField("status", "error").Error(err)
+		ctx.Logger.WithField("status", "error").Error(err)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(bs)
 
-	logger.WithFields(logrus.Fields{
+	ctx.Logger.WithFields(logrus.Fields{
 		"response_time": time.Since(n).Seconds(),
 		"status":        "success",
 	}).Info("success")

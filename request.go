@@ -1,5 +1,7 @@
 package dialogflow
 
+import "encoding/json"
+
 type (
 	Request struct {
 		ID              string          `json:"id"`
@@ -12,8 +14,8 @@ type (
 	}
 
 	OriginalRequest struct {
-		Source string `json:"source"`
-		// Data Data
+		Source string          `json:"source"`
+		Data   json.RawMessage `json:"data"`
 	}
 
 	Result struct {
@@ -71,38 +73,3 @@ type (
 		ErrorType string `json:"errorType"`
 	}
 )
-
-func (ctx *Context) GetUserID() string {
-	switch ctx.Request.Source() {
-	case PlatformTelegram:
-		return ctx.GetUserIDByKey("telegram_chat_id")
-	case PlatformFacebook:
-		return ctx.GetUserIDByKey("facebook_sender_id")
-	case PlatformGoogle:
-		return "" // TODO
-	}
-
-	return ""
-}
-
-func (ctx *Context) GetUserIDByKey(key string) string {
-	c, err := ctx.Request.Result.Contexts.Find("generic")
-
-	if err != nil {
-		ctx.Logger.Error(err)
-		return ""
-	}
-
-	str, err := c.Parameters.GetString(key)
-
-	if err != nil {
-		ctx.Logger.Error(err)
-		return ""
-	}
-
-	return str
-}
-
-func (req *Request) Source() string {
-	return req.OriginalRequest.Source
-}

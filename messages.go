@@ -43,3 +43,11 @@ func (r *Response) AddCustom(res CustomMessage, platform string) {
 		CustomMessage: res,
 	})
 }
+
+func (r *Response) AddGoogleSimpleResponse(res GoogleSimpleResponse) {
+	r.Messages = append(r.Messages, GoogleMessage{
+		Type:                 TypeGoogleSimpleResponse,
+		Platform:             PlatformGoogle,
+		GoogleSimpleResponse: res,
+	})
+}
