@@ -30,9 +30,9 @@ type (
 	}
 
 	Parameters map[string]interface{}
-	Contexts   []Context
+	Contexts   []DFContext
 
-	Context struct {
+	DFContext struct {
 		Name       string     `json:"name"`
 		Parameters Parameters `json:"parameters"`
 		Lifespan   int        `json:"lifespan"`
@@ -72,29 +72,31 @@ type (
 	}
 )
 
-func (req *Request) GetUserID() string {
-	switch req.OriginalRequest.Source {
+func (ctx *Context) GetUserID() string {
+	switch ctx.Request.Source() {
 	case PlatformTelegram:
-		return req.GetUserIDByKey("telegram_chat_id")
+		return ctx.GetUserIDByKey("telegram_chat_id")
 	case PlatformFacebook:
-		return req.GetUserIDByKey("facebook_sender_id")
+		return ctx.GetUserIDByKey("facebook_sender_id")
+	case PlatformGoogle:
+		return "" // TODO
 	}
 
 	return ""
 }
 
-func (req *Request) GetUserIDByKey(key string) string {
-	ctx, err := req.Result.Contexts.Find("generic")
+func (ctx *Context) GetUserIDByKey(key string) string {
+	c, err := ctx.Request.Result.Contexts.Find("generic")
 
 	if err != nil {
-		// TODO log
+		ctx.Logger.Error(err)
 		return ""
 	}
 
-	str, err := ctx.Parameters.GetString(key)
+	str, err := c.Parameters.GetString(key)
 
 	if err != nil {
-		// TODO log
+		ctx.Logger.Error(err)
 		return ""
 	}
 

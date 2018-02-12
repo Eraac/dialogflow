@@ -17,7 +17,7 @@ type (
 		config  Config
 	}
 
-	Handler func(r *Request) (*Response, error)
+	Handler func(ctx *Context) (*Response, error)
 )
 
 func NewRouter(c Config) *Router {
@@ -51,7 +51,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	dfReq := &Request{}
+	ctx := &Context{}
 
 	bs, err := ioutil.ReadAll(req.Body)
 
@@ -60,7 +60,7 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(bs, dfReq)
+	err = json.Unmarshal(bs, ctx.Request)
 
 	if httpError(err, w) {
 		r.config.Logger.WithField("status", "error").Error(err.Error())
@@ -69,14 +69,14 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	logger := r.config.Logger.WithFields(logrus.Fields{
 		"action":     "bot_interaction",
-		"intent":     dfReq.Result.Action,
-		"source":     dfReq.Source(),
-		"session_id": dfReq.SessionID,
-		"user_id":    dfReq.GetUserID(),
-		"user_ask":   dfReq.Result.ResolvedQuery,
+		"intent":     ctx.Request.Result.Action,
+		"source":     ctx.Request.Source(),
+		"session_id": ctx.Request.SessionID,
+		"user_id":    ctx.GetUserID(),
+		"user_ask":   ctx.Request.Result.ResolvedQuery,
 	})
 
-	h, ok := r.handler[dfReq.Result.Action]
+	h, ok := r.handler[ctx.Request.Result.Action]
 
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
@@ -84,17 +84,17 @@ func (r *Router) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	res, err := h(dfReq)
+	res, err := h(ctx)
 
 	if httpError(err, w) {
-		logger.WithField("status", "error").Error(err.Error())
+		logger.WithField("status", "error").Error(err)
 		return
 	}
 
 	bs, err = json.Marshal(res)
 
 	if httpError(err, w) {
-		logger.WithField("status", "error").Error(err.Error())
+		logger.WithField("status", "error").Error(err)
 		return
 	}
 

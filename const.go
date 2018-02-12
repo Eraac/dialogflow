@@ -7,6 +7,7 @@ const (
 	DataTelegram = "telegram_message"
 
 	PlatformDialogflow = ""
+	PlatformGoogle     = "google"
 	PlatformFacebook   = "facebook"
 	PlatformKik        = "kik"
 	PlatformLine       = "line"
