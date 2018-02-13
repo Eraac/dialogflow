@@ -1,14 +1,15 @@
 package dialogflow
 
 import (
-	"github.com/sirupsen/logrus"
 	"encoding/json"
+
+	"github.com/sirupsen/logrus"
 )
 
 type (
 	Context struct {
 		Request Request
-		Logger logrus.FieldLogger
+		Logger  logrus.FieldLogger
 	}
 )
 
@@ -48,8 +49,8 @@ func (ctx *Context) Source() string {
 	return ctx.Request.OriginalRequest.Source
 }
 
-func (ctx Context) GetGoogleData() DataGoogle {
-	d := DataGoogle{}
+func (ctx Context) GetGoogleData() DataRequestGoogle {
+	d := DataRequestGoogle{}
 
 	if err := json.Unmarshal(ctx.Request.OriginalRequest.Data, &d); err != nil {
 		ctx.Logger.Error(err)

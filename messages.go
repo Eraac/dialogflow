@@ -51,3 +51,40 @@ func (r *Response) AddGoogleSimpleResponse(res GoogleSimpleResponse) {
 		GoogleSimpleResponse: res,
 	})
 }
+
+func (r *Response) AddGoogleCustomPayload(res interface{}) {
+	r.Messages = append(r.Messages, GoogleMessage{
+		Type:     TypeGoogleCustomPayload,
+		Platform: PlatformGoogle,
+		GooglePayload: GooglePayload{
+			Payload: map[string]interface{}{
+				PlatformGoogle: res,
+			},
+		},
+	})
+}
+
+func (r *Response) AskForPermission(callback, reason string, permissions ...string) {
+	r.Speech = GooglePlaceholderForPermission
+
+	r.Data = Data{PlatformGoogle: DataResponseGoogle{
+		ExpectUserResponse: true,
+		IsSSML:             false,
+		NoInputPrompts:     []interface{}{},
+		SystemIntent: SystemIntent{
+			Intent: "actions.intent.PERMISSION",
+			Data: AskPermission{
+				Type:        "type.googleapis.com/google.actions.v2.PermissionValueSpec",
+				OptContext:  reason,
+				Permissions: permissions,
+			},
+		},
+	}}
+
+	r.ContextOut = []DFContext{
+		{Name: ContextAskPermission, Lifespan: 5, Parameters: Parameters{
+			ParameterEventCallback:   callback,
+			ParameterPermissionAsked: permissions,
+		}},
+	}
+}

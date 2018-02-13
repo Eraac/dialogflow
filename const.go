@@ -29,4 +29,9 @@ const (
 	TypeGoogleCarouselCard   = "carousel_card"
 	TypeGoogleLinkOut        = "link_out_chip"
 	TypeGoogleCustomPayload  = "custom_payload"
+
+	ContextAskPermission = "ask_permission"
+
+	ParameterEventCallback = "event_callback"
+	ParameterPermissionAsked = "permission_asked"
 )

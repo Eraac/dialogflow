@@ -2,16 +2,16 @@ package dialogflow
 
 type (
 	Response struct {
-		Speech      string `json:"speech,omitempty"`
-		DisplayText string `json:"displayText,omitempty"`
-		// Data          Data           `json:"data,omitempty"`
-		Messages      []interface{}  `json:"messages,omitempty"`
-		ContextOut    Contexts       `json:"contextOut,omitempty"`
-		Source        string         `json:"source,omitempty"`
-		FollowUpEvent *FollowUpEvent `json:"followupEvent,omitempty"`
+		Speech        string                 `json:"speech,omitempty"`
+		DisplayText   string                 `json:"displayText,omitempty"`
+		Data          Data `json:"data,omitempty"`
+		Messages      []interface{}          `json:"messages,omitempty"`
+		ContextOut    Contexts               `json:"contextOut,omitempty"`
+		Source        string                 `json:"source,omitempty"`
+		FollowUpEvent *FollowUpEvent         `json:"followupEvent,omitempty"`
 	}
 
-	// Data map[string]interface{}
+	Data map[string]interface{}
 
 	FollowUpEvent struct {
 		Name string     `json:"name"`
@@ -47,17 +47,23 @@ type (
 		Payload interface{} `json:"payload,omitempty"`
 	}
 
-	// Specific for Google Assistant
+	// === Specific for Google Assistant ===
+
 	GoogleMessage struct {
 		Type     string `json:"type"`
 		Platform string `json:"platform"`
 
 		GoogleSimpleResponse
+		GooglePayload
 	}
 
 	GoogleSimpleResponse struct {
-		DisplayText  string `json:"displayText"`
-		TextToSpeech string `json:"textToSpeech"`
+		DisplayText  string `json:"displayText,omitempty"`
+		TextToSpeech string `json:"textToSpeech,omitempty"`
+	}
+
+	GooglePayload struct {
+		Payload map[string]interface{} `json:"payload,omitempty"`
 	}
 
 	// TODO https://dialogflow.com/docs/reference/agent/message-objects#actions_on_google_message_objects

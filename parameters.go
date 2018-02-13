@@ -1,11 +1,13 @@
 package dialogflow
 
-import "strconv"
+import (
+	"reflect"
+	"strconv"
+)
 
 // HasKey return true if key exist and is not empty
 func (p Parameters) HasKey(key string) bool {
 	m := map[string]interface{}(p)
-
 	v, ok := m[key]
 
 	if !ok {
@@ -49,6 +51,25 @@ func (p Parameters) GetString(key string) (string, error) {
 	}
 
 	return s, nil
+}
+
+// GetSliceString return parameter `key` in slice of string
+func (p Parameters) GetSliceString(key string) ([]string, error) {
+	item, err := p.GetParameter(key)
+
+	if err != nil {
+		return []string{}, err
+	}
+
+	var ss []string
+
+	s := reflect.ValueOf(item)
+
+	for i := 0; i < s.Len(); i++ {
+		ss = append(ss, s.Index(i).Interface().(string))
+	}
+
+	return ss, nil
 }
 
 // GetParameter return parameter `key`
