@@ -58,6 +58,7 @@ type (
 
 	UserGoogle struct {
 		LastSeen    string   `json:"lastSeen"`
+		AccessToken string   `json:"accessToken"`
 		Permissions []string `json:"permissions"`
 		Locale      string   `json:"locale"`
 		UserID      string   `json:"userId"`
